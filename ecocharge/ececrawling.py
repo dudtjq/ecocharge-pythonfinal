@@ -2,7 +2,6 @@ from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 import time as t
-import codecs
 from bs4 import BeautifulSoup
 
 # pip install mysql-connector-python
@@ -51,17 +50,17 @@ mycursor.execute(query)
 for n in range(0, 13):
     img_list = div_list[n].select('div.thumb_area > a > img')
     name_list = div_list[n].select('div.info_area > strong.title > a._text')
-    infoBox_list = div_list[n].select('div.info_box')
-    price_list = []
-    releaseDate_list = []
+    # infoBox_list = div_list[n].select('div.info_box')
+    # price_list = []
+    # releaseDate_list = []
 
-    for infoBox in infoBox_list:
-        subInfo = infoBox.select_one('div.sub_info')
-        subInfo2 = subInfo.find_next_sibling()
-        price = subInfo.select_one('span.info_txt')
-        releaseDate = subInfo2.select_one('span.info_txt')
-        price_list.append(price.text)
-        releaseDate_list.append(releaseDate.text)
+    # for infoBox in infoBox_list:
+    #     subInfo = infoBox.select_one('div.sub_info')
+    #     subInfo2 = subInfo.find_next_sibling()
+    #     price = subInfo.select_one('span.info_txt')
+    #     releaseDate = subInfo2.select_one('span.info_txt')
+    #     price_list.append(price.text)
+    #     releaseDate_list.append(releaseDate.text)
 
 
     # t.sleep(2)
@@ -77,10 +76,10 @@ for n in range(0, 13):
     # for img in img_list:
     #     print('img: ', img.attrs['src'])
 
-    index = len(price_list)
+    index = len(img_list)
     for n in range(0, index):
-        query = 'INSERT INTO tbl_crawling (car_name, car_price, release_date, img_url, info_url) VALUES(%s, %s, %s, %s, %s)'
-        values = (name_list[n].text, price_list[n], releaseDate_list[n], img_list[n].attrs['src'], 'https://search.naver.com/search.naver' +  name_list[n].attrs['href'])
+        query = 'INSERT INTO tbl_crawling (img_url, info_url) VALUES(%s, %s)'
+        values = (img_list[n].attrs['src'], 'https://search.naver.com/search.naver' +  name_list[n].attrs['href'])
         mycursor.execute(query, values)
 
 mydb.commit()
