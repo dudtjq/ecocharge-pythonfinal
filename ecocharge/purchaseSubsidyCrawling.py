@@ -35,7 +35,7 @@ driver.get('https://ev.or.kr/nportal/buySupprt/initSubsidyTargetVehicleAction.do
 query = 'TRUNCATE TABLE tbl_crawling_subsidycar'
 mycursor.execute(query)
 
-query = 'INSERT INTO tbl_crawling_subsidycar (car_name, img_url, riding_capacity, top_speed, full_charge_range, battery, subsidy, call_number, company, country) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+query = 'INSERT INTO tbl_crawling_subsidycar (car_name, img_url, riding_capacity, top_speed, full_charge_range, battery, subsidy, call_number, company, country, location_url) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
 
 count = 1
 while count <= 2:
@@ -61,6 +61,7 @@ while count <= 2:
             t.sleep(0.5)
             n_soup = BeautifulSoup(driver.page_source, 'html.parser')
             sub_wrap = n_soup.select_one('div#contents > div.subPage > div.pageBox > div.subWrap')
+            location_list = n_soup.select('div#contents > div.subPage > div.pageBox > div.subWrap > div.itemCont > div.infoBox > a')
             h4_list = n_soup.select('div#contents > div.subPage > div.pageBox > div.subWrap > div.itemCont > div.infoBox > a > h4')
             dl_list = n_soup.select('div#contents > div.subPage > div.pageBox > div.subWrap > div.itemCont > div.infoBox > a > dl')
             
@@ -78,8 +79,9 @@ while count <= 2:
                 call_number = dd_list[5].text.split(':', 1)[1]
                 company = dd_list[6].text.split(':', 1)[1]
                 country = dd_list[7].text.split(':', 1)[1]
-
-                values = (car_name, img, riding_capacity, top_speed, full_charge_range, battery, subsidy, call_number, company, country)
+                location = location_list[n].attrs['onclick'].split('\'')[1]
+                print('location: ', location)
+                values = (car_name, img, riding_capacity, top_speed, full_charge_range, battery, subsidy, call_number, company, country, location)
                 mycursor.execute(query, values)
 
             driver.find_element(By.XPATH, f'//*[@id="pageingPosition"]/a[{next_button}]').click()
